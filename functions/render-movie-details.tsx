@@ -1,12 +1,23 @@
 "use server";
 
+import { Image } from "@/components/img";
+import { FadeIn } from "@/components/ui/FadeIn";
+import TouchableBounce from "@/components/ui/TouchableBounce";
 import { label } from "@bacons/apple-colors";
 import { Link, Stack } from "expo-router";
-import { ScrollView, Text, View } from "react-native";
-import TouchableBounce from "@/components/ui/TouchableBounce";
 import React from "react";
-import { FadeIn } from "@/components/ui/FadeIn";
-import { Image } from "@/components/img";
+import { ScrollView, Text, View } from "react-native";
+
+import * as AC from "@bacons/apple-colors";
+import {
+  CREDITS_FIXTURE,
+  MEDIA_COMPANIES_FIXTURE,
+  MEDIA_FIXTURE,
+  SIMILAR_MEDIA_FIXTURE,
+  VIDEOS_FIXTURE,
+} from "./fixtures/movie-detail-fixtures";
+
+const USE_FIXTURES = false;
 
 type MediaType = "movie" | "tv";
 
@@ -16,7 +27,6 @@ export async function renderMedia(id: string, type: MediaType = "movie") {
       <Stack.Screen
         options={{
           title: "",
-          headerTransparent: true,
         }}
       />
 
@@ -74,47 +84,85 @@ function HorizontalList({
 
 function MediaHero({ media, type }: { media: any; type: MediaType }) {
   return (
-    <View style={{ marginBottom: 24 }}>
-      <Image
-        source={{
-          uri: `https://image.tmdb.org/t/p/w500${media.backdrop_path}`,
-        }}
-        style={{
-          width: "100%",
-          height: 300,
-          resizeMode: "cover",
-        }}
-        transition={300}
-      />
-      <View style={{ padding: 16, marginTop: -60, flexDirection: "row" }}>
+    <View>
+      <View>
         <Image
           source={{
-            uri: `https://image.tmdb.org/t/p/w500${media.poster_path}`,
+            uri: `https://image.tmdb.org/t/p/w500${media.backdrop_path}`,
           }}
           style={{
-            width: 100,
-            height: 150,
-            borderRadius: 8,
-            marginRight: 16,
+            width: "100%",
+            height: 300,
+            resizeMode: "cover",
           }}
           transition={300}
         />
-        <View style={{ flex: 1, justifyContent: "flex-end" }}>
-          <Text
+
+        <View
+          style={{
+            padding: 16,
+            marginTop: -60,
+            flexDirection: "row",
+          }}
+        >
+          <View
             style={{
-              fontSize: 24,
-              fontWeight: "bold",
-              color: label,
-              marginBottom: 8,
+              position: "absolute",
+              left: 0,
+              right: 0,
+              bottom: 0,
+              top: 100,
+
+              backgroundColor: AC.systemGroupedBackground,
+            }}
+          />
+          <Image
+            source={{
+              uri: `https://image.tmdb.org/t/p/w500${media.poster_path}`,
+            }}
+            style={{
+              width: 100,
+              height: 150,
+              borderRadius: 8,
+              marginRight: 16,
+            }}
+            transition={300}
+          />
+
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "flex-end",
             }}
           >
-            {type === "movie" ? media.title : media.name}
-          </Text>
-          <Text style={{ fontSize: 15, color: label, opacity: 0.8 }}>
-            {media.tagline}
-          </Text>
+            <View
+              style={{
+                justifyContent: "flex-end",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: "bold",
+                  color: label,
+                  marginBottom: 8,
+                }}
+              >
+                {type === "movie" ? media.title : media.name}
+              </Text>
+              <Text style={{ fontSize: 15, color: label, opacity: 0.8 }}>
+                {media.tagline}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
+      <View
+        style={{
+          height: 24,
+          backgroundColor: AC.systemGroupedBackground,
+        }}
+      />
     </View>
   );
 }
@@ -223,16 +271,17 @@ function MediaCard({ media, type }: { media: any; type: MediaType }) {
 }
 
 async function MediaDetails({ id, type }: { id: string; type: MediaType }) {
-  const response = await fetch(`https://api.themoviedb.org/3/${type}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
-    },
-  });
-  const media = await response.json();
+  const media = USE_FIXTURES
+    ? MEDIA_FIXTURE
+    : await fetch(`https://api.themoviedb.org/3/${type}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+        },
+      }).then((res) => res.json());
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${type}`);
-  }
+  // if (!response.ok) {
+  //   throw new Error(`Failed to fetch ${type}`);
+  // }
 
   return (
     <>
@@ -247,7 +296,13 @@ async function MediaDetails({ id, type }: { id: string; type: MediaType }) {
       </FadeIn>
 
       <FadeIn>
-        <View style={{ marginBottom: 24, paddingHorizontal: 16 }}>
+        <View
+          style={{
+            backgroundColor: AC.systemGroupedBackground,
+            marginBottom: 24,
+            paddingHorizontal: 16,
+          }}
+        >
           <Text style={{ fontSize: 16, color: label, lineHeight: 24 }}>
             {media.overview}
           </Text>
@@ -349,15 +404,13 @@ async function MediaDetails({ id, type }: { id: string; type: MediaType }) {
 }
 
 async function MediaVideos({ id, type }: { id: string; type: MediaType }) {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/${type}/${id}/videos`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
-      },
-    }
-  );
-  const videos = await response.json();
+  const videos = USE_FIXTURES
+    ? VIDEOS_FIXTURE
+    : await fetch(`https://api.themoviedb.org/3/${type}/${id}/videos`, {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+        },
+      }).then((res) => res.json());
 
   if (!videos.results.length) return null;
 
@@ -371,15 +424,14 @@ async function MediaVideos({ id, type }: { id: string; type: MediaType }) {
 }
 
 async function MediaCast({ id, type }: { id: string; type: MediaType }) {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/${type}/${id}/credits`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
-      },
-    }
-  );
-  const credits = await response.json();
+  const credits = USE_FIXTURES
+    ? CREDITS_FIXTURE
+    : await fetch(`https://api.themoviedb.org/3/${type}/${id}/credits`, {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+        },
+      }).then((res) => res.json());
+  // console.log(JSON.stringify(credits));
 
   return (
     <HorizontalList title="Cast & Crew">
@@ -391,12 +443,13 @@ async function MediaCast({ id, type }: { id: string; type: MediaType }) {
 }
 
 async function MediaCompanies({ id, type }: { id: string; type: MediaType }) {
-  const response = await fetch(`https://api.themoviedb.org/3/${type}/${id}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
-    },
-  });
-  const media = await response.json();
+  const media = USE_FIXTURES
+    ? MEDIA_COMPANIES_FIXTURE
+    : await fetch(`https://api.themoviedb.org/3/${type}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+        },
+      }).then((res) => res.json());
 
   return (
     <HorizontalList title="Companies">
@@ -408,15 +461,13 @@ async function MediaCompanies({ id, type }: { id: string; type: MediaType }) {
 }
 
 async function SimilarMedia({ id, type }: { id: string; type: MediaType }) {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/${type}/${id}/similar`,
-    {
-      headers: {
-        Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
-      },
-    }
-  );
-  const similar = await response.json();
+  const similar = USE_FIXTURES
+    ? SIMILAR_MEDIA_FIXTURE
+    : await fetch(`https://api.themoviedb.org/3/${type}/${id}/similar`, {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+        },
+      }).then((res) => res.json());
 
   return (
     <HorizontalList title="More Like This">

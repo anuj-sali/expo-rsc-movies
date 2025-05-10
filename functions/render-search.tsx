@@ -1,15 +1,17 @@
 "use server";
 
-import { ScrollView, Text, View } from "react-native";
-import React from "react";
+import { Image } from "@/components/img";
+import { FadeIn } from "@/components/ui/FadeIn";
+import TouchableBounce from "@/components/ui/TouchableBounce";
 import * as AC from "@bacons/apple-colors";
 import { Link } from "expo-router";
-import TouchableBounce from "@/components/ui/TouchableBounce";
-import { FadeIn } from "@/components/ui/FadeIn";
-import { Image } from "@/components/img";
+import React from "react";
+import { ScrollView, Text, View } from "react-native";
+import { TRENDING_MEDIA_FIXTURE } from "./fixtures/search-fixtures";
 
 const POSTER_WIDTH = 140;
 const POSTER_HEIGHT = 210;
+const USE_FIXTURES = false;
 
 export async function renderSearchContents(query: string) {
   return (
@@ -279,6 +281,7 @@ async function getMovies(query = "") {
     }
 
     const data = await response.json();
+
     return data.results;
   } catch (error) {
     console.error("Error fetching movies:", error);
@@ -345,16 +348,19 @@ export async function renderTrendingMedia({
   timeWindow: "day" | "week";
   size: number;
 }) {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/trending/${type}/${timeWindow}`,
-    {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
-      },
-    }
-  );
-  const data = await response.json();
+  const data = USE_FIXTURES
+    ? TRENDING_MEDIA_FIXTURE
+    : await fetch(
+        `https://api.themoviedb.org/3/trending/${type}/${timeWindow}`,
+        {
+          headers: {
+            accept: "application/json",
+            Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+          },
+        }
+      ).then((res) => res.json());
+
+  // const data = await response.json();
   const shows = data.results.slice(0, size);
   return (
     <TrendingSection

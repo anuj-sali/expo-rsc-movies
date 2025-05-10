@@ -9,6 +9,7 @@ import React from "react";
 import { PlatformPressable } from "@react-navigation/elements";
 import { Tabs as NativeTabs } from "expo-router";
 import BlurTabBarBackground from "./TabBarBackground";
+import { Platform, useWindowDimensions } from "react-native";
 
 // These are the default tab options for iOS, they disable on other platforms.
 const DEFAULT_TABS: BottomTabNavigationOptions =
@@ -50,10 +51,29 @@ export default function Tabs({
     return child;
   });
 
+  const { width } = useWindowDimensions();
+
+  const isMd = width >= 768;
+  const isLg = width >= 1024;
+
   return (
     <NativeTabs
       screenOptions={{
         ...DEFAULT_TABS,
+
+        ...Platform.select({
+          ios: {},
+          default: isMd
+            ? {
+                tabBarPosition: "left",
+                tabBarVariant: "material",
+                tabBarLabelPosition: isLg ? undefined : "below-icon",
+              }
+            : {
+                tabBarPosition: "bottom",
+              },
+        }),
+
         ...screenOptions,
       }}
       {...props}

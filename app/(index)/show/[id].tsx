@@ -1,26 +1,28 @@
-import { renderMedia } from "@/functions/render-movie-details";
-import { BodyScrollView } from "@/components/ui/BodyScrollView";
-import { useLocalSearchParams } from "expo-router";
-import React, { useMemo } from "react";
-import { View } from "react-native";
 import Stack from "@/components/ui/Stack";
+import { renderMedia } from "@/functions/render-movie-details";
+import { useLocalSearchParams } from "expo-router";
+import React from "react";
+import { View } from "react-native";
+
+import { ShowPageBody } from "@/components/show-header-background";
 
 export { ErrorBoundary } from "expo-router";
 
 export default function ShowDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const screen = useMemo(() => renderMedia(id, "tv"), [id]);
-
   return (
-    <BodyScrollView>
+    <ShowPageBody>
       <Stack.Screen
         options={{
           title: "Show",
         }}
       />
-      <React.Suspense fallback={<MovieSkeleton />}>{screen}</React.Suspense>
-    </BodyScrollView>
+
+      <React.Suspense fallback={<MovieSkeleton />}>
+        {renderMedia(id, "tv")}
+      </React.Suspense>
+    </ShowPageBody>
   );
 }
 
