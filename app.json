@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "rsc-movies",
+    "name": "Expo Movies",
     "slug": "rsc-movies",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,17 +8,21 @@
     "scheme": "x.movie",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "web": {
+      "favicon": "./assets/images/icon.png"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIViewControllerBasedStatusBarAppearance": true,
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/icon.png",
+        "backgroundColor": "#000"
       }
-    },
-    "web": {
-      "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -28,7 +32,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#000"
         }
       ],
       "expo-font",
@@ -37,7 +41,7 @@
     "experiments": {
       "reactServerFunctions": true,
       "typedRoutes": true,
-      "reactCompiler": false
+      "reactCompiler": true
     },
     "extra": {
       "eas": {

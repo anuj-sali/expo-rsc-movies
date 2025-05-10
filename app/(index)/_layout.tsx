@@ -1,8 +1,8 @@
-import { Stack } from "expo-router";
+import Stack from "@/components/ui/Stack";
 import React from "react";
 
 export const unstable_settings = {
-  initialRouteName: "index",
+  anchor: "index",
 };
 
 export { ErrorBoundary } from "expo-router";
@@ -11,19 +11,6 @@ export default function TabLayout() {
   return (
     <Stack
       screenOptions={{
-        ...(process.env.EXPO_OS === "web"
-          ? {}
-          : {
-              headerLargeTitle: true,
-              headerTransparent: true,
-              headerBlurEffect: "systemChromeMaterial",
-              headerLargeTitleShadowVisible: false,
-              headerShadowVisible: true,
-              headerLargeStyle: {
-                // NEW: Make the large title transparent to match the background.
-                backgroundColor: "transparent",
-              },
-            }),
         title: "Search",
       }}
     />

@@ -1,8 +1,9 @@
 import { renderMedia } from "@/functions/render-movie-details";
 import { BodyScrollView } from "@/components/ui/BodyScrollView";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React, { useMemo } from "react";
 import { View } from "react-native";
+import Stack from "@/components/ui/Stack";
 
 export { ErrorBoundary } from "expo-router";
 

@@ -9,23 +9,18 @@ import { Image } from "@/components/img";
 
 export async function renderPersonDetails(id: string) {
   // Fetch person details
-  const response = await fetch(`https://api.themoviedb.org/3/person/${id}`, {
-    headers: {
-      Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
-    },
-  });
-  const person = await response.json();
-
-  // Fetch person credits
-  const creditsResponse = await fetch(
-    `https://api.themoviedb.org/3/person/${id}/combined_credits`,
-    {
+  const [person, credits] = await Promise.all([
+    fetch(`https://api.themoviedb.org/3/person/${id}`, {
       headers: {
         Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
       },
-    }
-  );
-  const credits = await creditsResponse.json();
+    }).then((res) => res.json()),
+    fetch(`https://api.themoviedb.org/3/person/${id}/combined_credits`, {
+      headers: {
+        Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
+      },
+    }).then((res) => res.json()),
+  ]);
 
   // Process credits into categories
   const allCredits = credits.cast.concat(credits.crew);
@@ -201,7 +196,7 @@ export async function renderPersonDetails(id: string) {
               justifyContent: "space-between",
             }}
           >
-            {allCredits.map((credit: any, index) => (
+            {allCredits.map((credit: any, index: number) => (
               <Link
                 key={credit.id + index}
                 // @ts-expect-error
