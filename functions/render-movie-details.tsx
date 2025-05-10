@@ -6,7 +6,7 @@ import { ScrollView, Text, View } from "react-native";
 import TouchableBounce from "@/components/ui/TouchableBounce";
 import React from "react";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { Image } from "expo-image";
+import { Image } from "@/components/img";
 
 type MediaType = "movie" | "tv";
 

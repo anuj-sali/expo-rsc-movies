@@ -2,10 +2,10 @@
 
 import TouchableBounce from "@/components/ui/TouchableBounce";
 import { Link, Stack } from "expo-router";
-import { Text, View, ScrollView, TouchableOpacity } from "react-native";
+import { Text, View, ScrollView } from "react-native";
 import * as AC from "@bacons/apple-colors";
 import ShowMore from "@/components/ShowMore";
-import { Image } from "expo-image";
+import { Image } from "@/components/img";
 
 export async function renderPersonDetails(id: string) {
   // Fetch person details

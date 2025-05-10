@@ -6,7 +6,7 @@ import * as AC from "@bacons/apple-colors";
 import { Link } from "expo-router";
 import TouchableBounce from "@/components/ui/TouchableBounce";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { Image } from "expo-image";
+import { Image } from "@/components/img";
 
 const POSTER_WIDTH = 140;
 const POSTER_HEIGHT = 210;
