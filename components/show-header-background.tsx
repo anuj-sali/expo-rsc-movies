@@ -26,8 +26,6 @@ export function ShowPageBody({ children }: { children: React.ReactNode }) {
 
   const scroll = useScrollViewOffset(ref);
   const style = useAnimatedStyle(() => {
-    console.log("scroll.value", scroll.value);
-
     if (process.env.EXPO_OS === "ios") {
       const inputRange = [0, 10];
       //   const inputRange = [-100, 200];

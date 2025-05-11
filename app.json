@@ -16,7 +16,8 @@
       "infoPlist": {
         "UIViewControllerBasedStatusBarAppearance": true,
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "bundleIdentifier": "app.expo.flix"
     },
     "android": {
       "adaptiveIcon": {
