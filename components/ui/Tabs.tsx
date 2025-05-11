@@ -8,8 +8,8 @@ import React from "react";
 // Better transitions on web, no changes on native.
 import { PlatformPressable } from "@react-navigation/elements";
 import { Tabs as NativeTabs } from "expo-router";
-import BlurTabBarBackground from "./TabBarBackground";
 import { Platform, useWindowDimensions } from "react-native";
+import BlurTabBarBackground from "./TabBarBackground";
 
 // These are the default tab options for iOS, they disable on other platforms.
 const DEFAULT_TABS: BottomTabNavigationOptions =
@@ -62,7 +62,19 @@ export default function Tabs({
         ...DEFAULT_TABS,
 
         ...Platform.select({
-          ios: {},
+          ios: isMd
+            ? {
+                tabBarPosition: "left",
+                tabBarVariant: "material",
+                tabBarLabelPosition: isLg ? undefined : "below-icon",
+                tabBarStyle: {
+                  // Use a transparent background on iOS to show the blur effect
+                  position: "relative",
+                },
+              }
+            : {
+                tabBarPosition: "bottom",
+              },
           default: isMd
             ? {
                 tabBarPosition: "left",
