@@ -1,11 +1,11 @@
 "use server";
 
-import TouchableBounce from "@/components/ui/TouchableBounce";
-import { Link, Stack } from "expo-router";
-import { Text, View, ScrollView } from "react-native";
-import * as AC from "@bacons/apple-colors";
 import ShowMore from "@/components/ShowMore";
 import { Image } from "@/components/img";
+import TouchableBounce from "@/components/ui/TouchableBounce";
+import * as AC from "@bacons/apple-colors";
+import { Link, Stack } from "expo-router";
+import { ScrollView, Text, View } from "react-native";
 
 export async function renderPersonDetails(id: string) {
   // Fetch person details
@@ -200,7 +200,9 @@ export async function renderPersonDetails(id: string) {
               <Link
                 key={credit.id + index}
                 // @ts-expect-error
-                href={`/${credit.media_type}/${credit.id}`}
+                href={`/${
+                  credit.media_type === "tv" ? "show" : credit.media_type
+                }/${credit.id}`}
                 asChild
               >
                 <TouchableBounce
