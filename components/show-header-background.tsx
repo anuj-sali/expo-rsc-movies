@@ -118,15 +118,12 @@ export function ShowPageBody({ children }: { children: React.ReactNode }) {
             headerBlurEffect: "none",
             headerBackButtonDisplayMode: "minimal",
             headerTintColor: AC.label,
-
-            headerBackground:
-              process.env.EXPO_OS === "web"
-                ? () => {
-                    return <AnimatedShowHeaderBackground style={style} />;
-                  }
-                : () => {
-                    return <AnimatedShowHeaderBackgroundIos style={style} />;
-                  },
+            headerBackground() {
+              if (process.env.EXPO_OS === "web") {
+                return <AnimatedShowHeaderBackground style={style} />;
+              }
+              return <AnimatedShowHeaderBackgroundIos style={style} />;
+            },
             headerTitle(props) {
               return (
                 <Animated.Text
@@ -167,8 +164,8 @@ function AnimatedShowHeaderBackgroundIos({ style }: { style: ViewStyle }) {
           left: 0,
           right: 0,
 
-          maxHeight: headerHeight.get(),
-          minHeight: headerHeight.get(),
+          maxHeight: headerHeight,
+          minHeight: headerHeight,
           width: "auto",
           // height: "auto",
           borderBottomWidth: 0.5,

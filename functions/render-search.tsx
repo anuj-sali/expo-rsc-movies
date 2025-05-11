@@ -43,7 +43,7 @@ const MediaCard = ({
       <View
         style={{
           width: POSTER_WIDTH,
-          backgroundColor: AC.secondarySystemBackground,
+
           borderRadius: 12,
           overflow: "hidden",
         }}
@@ -106,7 +106,6 @@ const PersonCard = ({
       <View
         style={{
           width: POSTER_WIDTH,
-          backgroundColor: AC.secondarySystemBackground,
           borderRadius: 12,
           overflow: "hidden",
         }}

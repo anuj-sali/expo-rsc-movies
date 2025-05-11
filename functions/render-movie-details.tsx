@@ -10,6 +10,7 @@ import { ScrollView, Text, View } from "react-native";
 
 import { ParallaxImageWrapper } from "@/components/show-header-background";
 import * as AC from "@bacons/apple-colors";
+import { BlurView } from "expo-blur";
 import {
   CREDITS_FIXTURE,
   MEDIA_COMPANIES_FIXTURE,
@@ -114,7 +115,7 @@ function MediaHero({ media, type }: { media: any; type: MediaType }) {
               left: 0,
               right: 0,
               bottom: 0,
-              top: 100,
+              top: 80,
 
               backgroundColor: AC.systemGroupedBackground,
             }}
@@ -220,22 +221,37 @@ function CastCard({ person }: { person: any }) {
 
 function CompanyCard({ company }: { company: any }) {
   return (
-    <View style={{ alignItems: "center", marginHorizontal: 8, width: 100 }}>
-      {company.logo_path && (
-        <Image
-          source={{
-            uri: `https://image.tmdb.org/t/p/w200${company.logo_path}`,
-          }}
-          style={{ width: 80, height: 80, resizeMode: "contain" }}
-          transition={300}
-        />
-      )}
+    <View
+      style={{ alignItems: "center", marginHorizontal: 8, gap: 4, width: 100 }}
+    >
+      <BlurView
+        style={{
+          width: 100,
+          height: 100,
+          justifyContent: "center",
+          alignItems: "center",
+          borderRadius: 12,
+          overflow: "hidden",
+        }}
+        intensity={100}
+        tint="systemChromeMaterial"
+      >
+        {company.logo_path && (
+          <Image
+            source={{
+              uri: `https://image.tmdb.org/t/p/w200${company.logo_path}`,
+            }}
+            style={{ width: 80, height: 80, resizeMode: "contain" }}
+            transition={300}
+          />
+        )}
+      </BlurView>
       <Text
         style={{
           fontSize: 12,
           color: label,
-          textAlign: "center",
           marginTop: 4,
+          fontWeight: "600",
         }}
         numberOfLines={2}
       >
