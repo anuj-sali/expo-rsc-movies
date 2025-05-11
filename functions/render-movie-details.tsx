@@ -8,6 +8,7 @@ import { Link, Stack } from "expo-router";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 
+import { ParallaxImageWrapper } from "@/components/show-header-background";
 import * as AC from "@bacons/apple-colors";
 import {
   CREDITS_FIXTURE,
@@ -86,17 +87,19 @@ function MediaHero({ media, type }: { media: any; type: MediaType }) {
   return (
     <View>
       <View>
-        <Image
-          source={{
-            uri: `https://image.tmdb.org/t/p/w500${media.backdrop_path}`,
-          }}
-          style={{
-            width: "100%",
-            height: 300,
-            resizeMode: "cover",
-          }}
-          transition={300}
-        />
+        <ParallaxImageWrapper>
+          <Image
+            source={{
+              uri: `https://image.tmdb.org/t/p/w500${media.backdrop_path}`,
+            }}
+            style={{
+              width: "100%",
+              height: 300,
+              resizeMode: "cover",
+            }}
+            transition={300}
+          />
+        </ParallaxImageWrapper>
 
         <View
           style={{
@@ -299,7 +302,7 @@ async function MediaDetails({ id, type }: { id: string; type: MediaType }) {
         <View
           style={{
             backgroundColor: AC.systemGroupedBackground,
-            marginBottom: 24,
+            paddingBottom: 24,
             paddingHorizontal: 16,
           }}
         >

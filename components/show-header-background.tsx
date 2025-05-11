@@ -1,4 +1,5 @@
 "use client";
+"use no memo";
 
 import React, { useEffect } from "react";
 import { StyleSheet, useColorScheme, ViewStyle } from "react-native";
@@ -8,6 +9,7 @@ import { Stack } from "expo-router";
 import Animated, {
   AnimatedRef,
   interpolate,
+  interpolateColor,
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
@@ -15,6 +17,7 @@ import Animated, {
 import { BodyScrollView } from "./ui/BodyScrollView";
 
 import * as AC from "@bacons/apple-colors";
+import { useReanimatedHeaderHeight } from "react-native-screens/reanimated";
 
 export const ScrollContext =
   React.createContext<AnimatedRef<Animated.ScrollView> | null>(null);
@@ -22,39 +25,42 @@ export const ScrollContext =
 const ABlurView = Animated.createAnimatedComponent(BlurView);
 
 export function ShowPageBody({ children }: { children: React.ReactNode }) {
+  "use no memo";
   const ref = useAnimatedRef<Animated.ScrollView>();
 
   const scroll = useScrollViewOffset(ref);
   const style = useAnimatedStyle(() => {
     if (process.env.EXPO_OS === "ios") {
-      const inputRange = [0, 10];
-      //   const inputRange = [-100, 200];
+      const start = 280;
+      const inputRange = [start, start + 30];
       return {
-        opacity: interpolate(scroll.value, inputRange, [0, 1], "clamp"),
-
-        // borderBottomColor: `rgba(84.15, 84.15, 89.25,${interpolate(
-        //   scroll.value,
-        //   inputRange,
-        //   [0, 0.5],
-        //   "clamp"
-        // )})`,
+        opacity: interpolate(scroll.get(), inputRange, [0, 1], "clamp"),
+        borderBottomColor: interpolateColor(scroll.get(), inputRange, [
+          `rgba(84.15, 84.15, 89.25,0)`,
+          `rgba(84.15, 84.15, 89.25,0.5)`,
+        ]),
       };
     }
 
     return {
-      opacity: interpolate(scroll.value, [100, 150], [0, 1], "clamp"),
+      opacity: interpolate(scroll.get(), [100, 150], [0, 1], "clamp"),
 
       borderBottomColor: `rgba(84.15, 84.15, 89.25,${interpolate(
-        scroll.value,
+        scroll.get(),
         [100, 150],
-        [0, 0.5],
+        [0, 0.2],
         "clamp"
       )})`,
     };
   });
   const titleStyle = useAnimatedStyle(() => {
+    const start = 250;
+    const inputRange = [start, start + 30];
     return {
-      opacity: interpolate(scroll.value, [-100, 100], [0, 1], "clamp"),
+      opacity: interpolate(scroll.get(), inputRange, [0, 1], "clamp"),
+      transform: [
+        { translateY: interpolate(scroll.get(), inputRange, [5, 0], "clamp") },
+      ],
     };
   });
 
@@ -65,44 +71,121 @@ export function ShowPageBody({ children }: { children: React.ReactNode }) {
   }, [ref]);
 
   return (
-    <BodyScrollView ref={ref}>
-      <Stack.Screen
-        options={{
-          headerTransparent: true,
-          headerLargeTitle: false,
-          headerLargeStyle: {
-            backgroundColor: undefined,
-          },
-          headerBackButtonDisplayMode: "minimal",
-          headerTintColor: AC.label,
-          headerBackground:
-            process.env.EXPO_OS === "web"
-              ? () => {
-                  return <AnimatedShowHeaderBackground style={style} />;
-                }
-              : undefined,
-          headerTitle(props) {
-            return (
-              <Animated.Text
-                style={[
-                  {
-                    width: "100%",
-                    color: AC.label,
-                    fontSize: 16,
-                    fontWeight: "600",
-                  },
-                  titleStyle,
-                ]}
-              >
-                {props.children}
-              </Animated.Text>
-            );
-          },
-        }}
-      />
+    <>
+      {/* <Animated.View
+        style={[
+          // StyleSheet.absoluteFill,
+          {
+            zIndex: 999,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
 
-      <ScrollContext.Provider value={ref}>{children}</ScrollContext.Provider>
-    </BodyScrollView>
+            maxHeight: headerHeight.get(),
+            minHeight: headerHeight.get(),
+            width: "auto",
+            // height: "auto",
+            borderBottomWidth: 0.5,
+          },
+          style,
+        ]}
+      >
+        <BlurView
+          intensity={100}
+          tint={"systemChromeMaterial"}
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              flex: 1,
+            },
+          ]}
+        />
+      </Animated.View> */}
+      <BodyScrollView
+        ref={ref}
+        automaticallyAdjustsScrollIndicatorInsets={true}
+        contentInsetAdjustmentBehavior="never"
+      >
+        <Stack.Screen
+          options={{
+            headerTransparent: true,
+            headerLargeTitle: false,
+            headerLargeStyle: {
+              backgroundColor: undefined,
+            },
+            headerBlurEffect: "none",
+            headerBackButtonDisplayMode: "minimal",
+            headerTintColor: AC.label,
+
+            headerBackground:
+              process.env.EXPO_OS === "web"
+                ? () => {
+                    return <AnimatedShowHeaderBackground style={style} />;
+                  }
+                : () => {
+                    return <AnimatedShowHeaderBackgroundIos style={style} />;
+                  },
+            headerTitle(props) {
+              return (
+                <Animated.Text
+                  style={[
+                    {
+                      width: "100%",
+                      color: AC.label,
+                      fontSize: 16,
+                      fontWeight: "600",
+                    },
+                    titleStyle,
+                  ]}
+                >
+                  {props.children}
+                </Animated.Text>
+              );
+            },
+          }}
+        />
+
+        <ScrollContext.Provider value={ref}>{children}</ScrollContext.Provider>
+      </BodyScrollView>
+    </>
+  );
+}
+
+function AnimatedShowHeaderBackgroundIos({ style }: { style: ViewStyle }) {
+  const headerHeight = useReanimatedHeaderHeight();
+
+  return (
+    <Animated.View
+      style={[
+        // StyleSheet.absoluteFill,
+        {
+          zIndex: 999,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+
+          maxHeight: headerHeight.get(),
+          minHeight: headerHeight.get(),
+          width: "auto",
+          // height: "auto",
+          borderBottomWidth: 0.5,
+        },
+        style,
+      ]}
+    >
+      <BlurView
+        intensity={100}
+        tint={"systemChromeMaterial"}
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            flex: 1,
+          },
+        ]}
+      />
+    </Animated.View>
   );
 }
 const HEADER_HEIGHT = 300;
@@ -117,7 +200,6 @@ export function ParallaxImageWrapper({
   const scrollOffset = useScrollViewOffset(ref);
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
-    console.log("scrollOffset.value", scrollOffset.value);
     return {
       transform: [
         {
@@ -172,6 +254,7 @@ export function useAnimatedShowHeaderStyle(
 }
 
 export function AnimatedShowHeaderBackground({ style }: { style: ViewStyle }) {
+  "use no memo";
   const theme = useColorScheme();
 
   return (

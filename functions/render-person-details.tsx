@@ -2,6 +2,7 @@
 
 import ShowMore from "@/components/ShowMore";
 import { Image } from "@/components/img";
+import { ParallaxImageWrapper } from "@/components/show-header-background";
 import TouchableBounce from "@/components/ui/TouchableBounce";
 import * as AC from "@bacons/apple-colors";
 import { Link, Stack } from "expo-router";
@@ -52,19 +53,21 @@ export async function renderPersonDetails(id: string) {
               bottom: 0,
             }}
           >
-            <Image
-              transition={200}
-              source={{
-                uri: `https://image.tmdb.org/t/p/original${person.profile_path}`,
-              }}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-              }}
-            />
+            <ParallaxImageWrapper>
+              <Image
+                transition={200}
+                source={{
+                  uri: `https://image.tmdb.org/t/p/original${person.profile_path}`,
+                }}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                }}
+              />
+            </ParallaxImageWrapper>
             <View
               style={{
                 // subtle transparent to black gradient at the bottom of the image
@@ -101,7 +104,7 @@ export async function renderPersonDetails(id: string) {
       </View>
 
       {/* Overview Section */}
-      <View style={{ padding: 16 }}>
+      <View style={{ padding: 16, backgroundColor: AC.systemBackground }}>
         <Text
           style={{
             fontSize: 22,
