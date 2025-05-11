@@ -1,12 +1,12 @@
 /// <reference types="react/canary" />
 import { ScrollView, View } from "react-native";
 
-import React from "react";
-import { renderSearchContents } from "@/functions/render-search";
+import { SearchPlaceholder } from "@/components/SearchPlaceholder";
 import { BodyScrollView } from "@/components/ui/BodyScrollView";
+import { renderSearchContents } from "@/functions/render-search";
 import { useHeaderSearch } from "@/hooks/useHeaderSearch";
 import * as AC from "@bacons/apple-colors";
-import { SearchPlaceholder } from "@/components/SearchPlaceholder";
+import React from "react";
 
 const POSTER_WIDTH = 140;
 const POSTER_HEIGHT = 210;
