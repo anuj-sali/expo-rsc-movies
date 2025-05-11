@@ -19,6 +19,11 @@ export default function RootLayout() {
             title="Search"
             systemImage="magnifyingglass"
           />
+          <Tabs.Screen
+            name="(settings)"
+            title="From Expo"
+            systemImage="app.gift.fill"
+          />
         </Tabs>
       </ReanimatedScreenProvider>
       {process.env.EXPO_OS === "android" && <StatusBar style="auto" />}
