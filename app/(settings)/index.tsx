@@ -1,11 +1,4 @@
-import {
-  Image,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Image, Platform, Text, TouchableOpacity, View } from "react-native";
 
 import * as Form from "@/components/ui/Form";
 import * as AC from "@bacons/apple-colors";
@@ -18,27 +11,20 @@ import * as App from "expo-application";
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
 
-const POSTER_WIDTH = 140;
-const POSTER_HEIGHT = 210;
-
 const backgroundImage =
   process.env.EXPO_OS === "web"
     ? `backgroundImage`
     : `experimental_backgroundImage`;
 
 export default function SettingsScreen() {
-  "use no memo";
   return (
     <Form.List>
       <Form.Section>
         <View
           custom
           style={{
-            // alignItems: "center",
             flex: 1,
-
             gap: 16,
-            // overflow: "hidden",
             borderCurve: "circular",
             borderWidth: 0.5,
             borderColor: "rgba(0,0,0,0.1)",
@@ -62,7 +48,7 @@ export default function SettingsScreen() {
               opacity: 0.3,
               mixBlendMode: "soft-light",
             }}
-            source={require("@/assets/images/motion-drop.png")}
+            source={require("@/assets/images/texture.png")}
           />
           <TouchableOpacity
             onPress={() => {
@@ -174,66 +160,3 @@ export default function SettingsScreen() {
     </Form.List>
   );
 }
-const SkeletonItem = () => (
-  <View style={{ marginHorizontal: 4 }}>
-    <View
-      style={{
-        width: POSTER_WIDTH,
-        backgroundColor: AC.secondarySystemBackground,
-        borderRadius: 12,
-        overflow: "hidden",
-      }}
-    >
-      <View
-        style={{
-          width: POSTER_WIDTH,
-          height: POSTER_HEIGHT,
-          borderRadius: 12,
-          backgroundColor: AC.systemGray5,
-        }}
-      />
-      <View style={{ padding: 8, gap: 4 }}>
-        <View
-          style={{
-            height: 14,
-            width: "80%",
-            backgroundColor: AC.systemGray5,
-            borderRadius: 4,
-          }}
-        />
-        <View
-          style={{
-            height: 12,
-            width: "30%",
-            backgroundColor: AC.systemGray5,
-            borderRadius: 4,
-          }}
-        />
-      </View>
-    </View>
-  </View>
-);
-
-const SkeletonSection = () => (
-  <View>
-    <View
-      style={{
-        width: 100,
-        height: 20,
-        backgroundColor: AC.systemGray5,
-        borderRadius: 4,
-        marginBottom: 12,
-        marginLeft: 16,
-      }}
-    />
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 12 }}
-    >
-      {[...Array(4)].map((_, i) => (
-        <SkeletonItem key={i} />
-      ))}
-    </ScrollView>
-  </View>
-);
