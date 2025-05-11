@@ -329,7 +329,13 @@ async function MediaDetails({ id, type }: { id: string; type: MediaType }) {
       </FadeIn>
 
       <FadeIn>
-        <View style={{ marginBottom: 24, paddingHorizontal: 16 }}>
+        <View
+          style={{
+            paddingBottom: 24,
+            paddingHorizontal: 16,
+            backgroundColor: AC.systemGroupedBackground,
+          }}
+        >
           <Text
             style={{
               fontSize: 20,
