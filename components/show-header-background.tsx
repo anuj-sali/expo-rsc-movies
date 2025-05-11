@@ -23,39 +23,40 @@ export const ScrollContext =
   React.createContext<AnimatedRef<Animated.ScrollView> | null>(null);
 
 const ABlurView = Animated.createAnimatedComponent(BlurView);
+const HEADER_HEIGHT = 300;
+const ANIM_START = HEADER_HEIGHT * 0.66;
 
 export function ShowPageBody({ children }: { children: React.ReactNode }) {
   "use no memo";
   const ref = useAnimatedRef<Animated.ScrollView>();
 
   const scroll = useScrollViewOffset(ref);
-  const style = useAnimatedStyle(() => {
-    if (process.env.EXPO_OS === "ios") {
-      const start = 280;
-      const inputRange = [start, start + 30];
-      return {
-        opacity: interpolate(scroll.get(), inputRange, [0, 1], "clamp"),
-        borderBottomColor: interpolateColor(scroll.get(), inputRange, [
-          `rgba(84.15, 84.15, 89.25,0)`,
-          `rgba(84.15, 84.15, 89.25,0.5)`,
-        ]),
-      };
-    }
+  const style =
+    process.env.EXPO_OS === "ios"
+      ? useAnimatedStyle(() => {
+          const inputRange = [ANIM_START, ANIM_START + 30];
+          return {
+            opacity: interpolate(scroll.get(), inputRange, [0, 1], "clamp"),
+            borderBottomColor: interpolateColor(scroll.get(), inputRange, [
+              `rgba(84.15, 84.15, 89.25,0)`,
+              `rgba(84.15, 84.15, 89.25,0.5)`,
+            ]),
+          };
+        })
+      : useAnimatedStyle(() => {
+          return {
+            opacity: interpolate(scroll.get(), [100, 150], [0, 1], "clamp"),
 
-    return {
-      opacity: interpolate(scroll.get(), [100, 150], [0, 1], "clamp"),
-
-      borderBottomColor: `rgba(84.15, 84.15, 89.25,${interpolate(
-        scroll.get(),
-        [100, 150],
-        [0, 0.2],
-        "clamp"
-      )})`,
-    };
-  });
+            borderBottomColor: `rgba(84.15, 84.15, 89.25,${interpolate(
+              scroll.get(),
+              [100, 150],
+              [0, 0.2],
+              "clamp"
+            )})`,
+          };
+        });
   const titleStyle = useAnimatedStyle(() => {
-    const start = 250;
-    const inputRange = [start, start + 30];
+    const inputRange = [ANIM_START, ANIM_START + 30];
     return {
       opacity: interpolate(scroll.get(), inputRange, [0, 1], "clamp"),
       transform: [
@@ -188,7 +189,6 @@ function AnimatedShowHeaderBackgroundIos({ style }: { style: ViewStyle }) {
     </Animated.View>
   );
 }
-const HEADER_HEIGHT = 300;
 
 export function ParallaxImageWrapper({
   children,
@@ -235,26 +235,7 @@ export function ParallaxImageWrapper({
   );
 }
 
-export function useAnimatedShowHeaderStyle(
-  ref: AnimatedRef<Animated.ScrollView>
-) {
-  const scroll = useScrollViewOffset(ref);
-  return useAnimatedStyle(() => {
-    return {
-      opacity: interpolate(scroll.value, [100, 150], [0, 1], "clamp"),
-
-      borderBottomColor: `rgba(84.15, 84.15, 89.25,${interpolate(
-        scroll.value,
-        [100, 150],
-        [0, 0.5],
-        "clamp"
-      )})`,
-    };
-  });
-}
-
 export function AnimatedShowHeaderBackground({ style }: { style: ViewStyle }) {
-  "use no memo";
   const theme = useColorScheme();
 
   return (

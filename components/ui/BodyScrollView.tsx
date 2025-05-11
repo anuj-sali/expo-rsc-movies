@@ -11,6 +11,7 @@ export function BodyScrollView(
   props: ScrollViewProps & { ref?: React.Ref<Animated.ScrollView> }
 ) {
   const paddingBottom = useBottomTabOverflow();
+  const { bottom } = useSafeAreaInsets();
 
   const statusBarInset = useSafeAreaInsets().top; // inset of the status bar
 
@@ -24,7 +25,7 @@ export function BodyScrollView(
       automaticallyAdjustsScrollIndicatorInsets
       contentInsetAdjustmentBehavior="automatic"
       contentInset={{ bottom: paddingBottom }}
-      scrollIndicatorInsets={{ bottom: paddingBottom }}
+      scrollIndicatorInsets={{ bottom: paddingBottom - bottom }}
       {...props}
       style={[{ backgroundColor: AC.systemGroupedBackground }, props.style]}
     />
