@@ -12,7 +12,6 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from "react-native-reanimated";
-import { useReanimatedHeaderHeight } from "react-native-screens/reanimated";
 import { BodyScrollView } from "./ui/BodyScrollView";
 
 import * as AC from "@bacons/apple-colors";
@@ -25,8 +24,7 @@ const ABlurView = Animated.createAnimatedComponent(BlurView);
 export function ShowPageBody({ children }: { children: React.ReactNode }) {
   const ref = useAnimatedRef<Animated.ScrollView>();
 
-  const headerHeight = useReanimatedHeaderHeight();
-  const scroll = useScrollViewOffset(ref, headerHeight);
+  const scroll = useScrollViewOffset(ref);
   const style = useAnimatedStyle(() => {
     console.log("scroll.value", scroll.value);
 

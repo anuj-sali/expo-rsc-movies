@@ -37,6 +37,7 @@ export default function SettingsScreen() {
             // alignItems: "center",
             flex: 1,
 
+            gap: 16,
             // overflow: "hidden",
             borderCurve: "circular",
             borderWidth: 0.5,
@@ -105,7 +106,7 @@ export default function SettingsScreen() {
                 style={{
                   flexDirection: "row",
                   gap: 8,
-
+                  marginLeft: 8,
                   borderWidth: 0.5,
                   borderColor: AC.separator,
                   overflow: "hidden",
