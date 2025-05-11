@@ -1,8 +1,13 @@
-# Expo Router RSC Movies Demo
+# Expo Router RSC Movies
 
-> Expo RSC is in preview and may have unexpected behavior that's hard to understand. Errors, HMR, and deployment will all be solid when it's moved out of beta.
+Movies app built with with Expo Router. Running on iOS, Android, and web.
+
+![image](https://github.com/user-attachments/assets/5690e374-e85e-401d-bd56-8e1549bd8372)
 
 https://github.com/user-attachments/assets/1873c9cf-06a0-4b79-b1c1-f7dd0fc55724
+
+
+## Configuration
 
 Add environment variables to your `.env.local` file:
 
