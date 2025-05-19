@@ -6,10 +6,13 @@ import { Href, LinkProps, Link as RouterLink, Stack } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React from "react";
 import {
+  ActivityIndicator,
   Button,
   OpaqueColorValue,
+  RefreshControl,
   Text as RNText,
   ScrollViewProps,
+  Share,
   StyleProp,
   StyleSheet,
   TextProps,
@@ -22,18 +25,98 @@ import {
 import { BodyScrollView } from "./BodyScrollView";
 import { HeaderButton } from "./Header";
 
+import Animated from "react-native-reanimated";
+
 type ListStyle = "grouped" | "auto";
 
 const ListStyleContext = React.createContext<ListStyle>("auto");
 
-export function List({
-  contentContainerStyle,
-  ...props
-}: ScrollViewProps & {
+type RefreshCallback = () => Promise<void>;
+
+const RefreshContext = React.createContext<{
+  subscribe: (cb: RefreshCallback) => () => void;
+  hasSubscribers: boolean;
+  refresh: () => Promise<void>;
+  refreshing: boolean;
+}>({
+  subscribe: () => () => {},
+  hasSubscribers: false,
+  refresh: async () => {},
+  refreshing: false,
+});
+
+export const RefreshContextProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const subscribersRef = React.useRef<Set<RefreshCallback>>(new Set());
+  const [subscriberCount, setSubscriberCount] = React.useState(0);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const subscribe = (cb: RefreshCallback) => {
+    subscribersRef.current.add(cb);
+    setSubscriberCount((count) => count + 1);
+
+    return () => {
+      subscribersRef.current.delete(cb);
+      setSubscriberCount((count) => count - 1);
+    };
+  };
+
+  const refresh = async () => {
+    const subscribers = Array.from(subscribersRef.current);
+    if (subscribers.length === 0) return;
+
+    setRefreshing(true);
+    try {
+      await Promise.all(subscribers.map((cb) => cb()));
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  return (
+    <RefreshContext
+      value={{
+        subscribe,
+        refresh,
+        refreshing,
+        hasSubscribers: subscriberCount > 0,
+      }}
+    >
+      {children}
+    </RefreshContext>
+  );
+};
+
+export function usePullRefresh(callback?: () => Promise<void>) {
+  const { subscribe, refresh } = React.use(RefreshContext);
+
+  React.useEffect(() => {
+    if (callback) {
+      const unsubscribe = subscribe(callback);
+      return unsubscribe;
+    }
+  }, [callback, subscribe]);
+
+  return refresh;
+}
+
+type ListProps = ScrollViewProps & {
   /** Set the Expo Router `<Stack />` title when mounted. */
   navigationTitle?: string;
   listStyle?: ListStyle;
-}) {
+};
+export function List(props: ListProps) {
+  return (
+    <RefreshContextProvider>
+      <InnerList {...props} />
+    </RefreshContextProvider>
+  );
+}
+
+function InnerList({ contentContainerStyle, ...props }: ListProps) {
+  const { hasSubscribers, refreshing, refresh } = React.use(RefreshContext);
+
   return (
     <>
       {props.navigationTitle && (
@@ -49,10 +132,16 @@ export function List({
             contentContainerStyle
           )}
           style={{
-            maxWidth: 650,
+            maxWidth: 768,
+            width: process.env.EXPO_OS === "web" ? "100%" : undefined,
             marginHorizontal:
               process.env.EXPO_OS === "web" ? "auto" : undefined,
           }}
+          refreshControl={
+            hasSubscribers ? (
+              <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+            ) : undefined
+          }
           {...props}
         />
       </ListStyleContext>
@@ -94,17 +183,25 @@ export function FormItem({
   children,
   href,
   onPress,
+  onLongPress,
+  style,
+  hStyle,
   ref,
 }: Pick<ViewProps, "children"> & {
   href?: Href<any>;
   onPress?: () => void;
+  onLongPress?: () => void;
+  style?: ViewStyle;
+  hStyle?: ViewStyle;
   ref?: React.Ref<View>;
 }) {
   if (href == null) {
-    if (onPress == null) {
+    if (onPress == null && onLongPress == null) {
       return (
-        <View style={styles.itemPadding}>
-          <HStack style={{ minHeight: minItemHeight }}>{children}</HStack>
+        <View style={[styles.itemPadding, style]}>
+          <HStack style={[{ minHeight: minItemHeight }, hStyle]}>
+            {children}
+          </HStack>
         </View>
       );
     }
@@ -113,19 +210,24 @@ export function FormItem({
         ref={ref}
         underlayColor={AppleColors.systemGray4}
         onPress={onPress}
+        onLongPress={onLongPress}
       >
         <View style={styles.itemPadding}>
-          <HStack style={{ minHeight: minItemHeight }}>{children}</HStack>
+          <HStack style={[{ minHeight: minItemHeight }, hStyle]}>
+            {children}
+          </HStack>
         </View>
       </TouchableHighlight>
     );
   }
 
   return (
-    <Link asChild href={href} onPress={onPress}>
+    <Link asChild href={href} onPress={onPress} onLongPress={onLongPress}>
       <TouchableHighlight ref={ref} underlayColor={AppleColors.systemGray4}>
         <View style={styles.itemPadding}>
-          <HStack style={{ minHeight: minItemHeight }}>{children}</HStack>
+          <HStack style={[{ minHeight: minItemHeight }, hStyle]}>
+            {children}
+          </HStack>
         </View>
       </TouchableHighlight>
     </Link>
@@ -267,6 +369,17 @@ export function Link({
                   presentationStyle:
                     WebBrowser.WebBrowserPresentationStyle.AUTOMATIC,
                 });
+              } else if (
+                props.target === "share" &&
+                // Ensure the resolved href is an external URL.
+                /^([\w\d_+.-]+:)?\/\//.test(RouterLink.resolveHref(props.href))
+              ) {
+                // Prevent the default behavior of linking to the default browser on native.
+                e.preventDefault();
+                // Open the link in an in-app browser.
+                Share.share({
+                  url: props.href as string,
+                });
               } else {
                 props.onPress?.(e);
               }
@@ -302,28 +415,61 @@ export const FormFont = {
   },
 };
 
+export function Loading({ title }: { title?: string }) {
+  return (
+    <Section title={title}>
+      <View>
+        <ActivityIndicator />
+      </View>
+    </Section>
+  );
+}
+
+function flattenChildren(children: React.ReactNode): React.ReactElement[] {
+  const result: React.ReactElement[] = [];
+
+  function recurse(nodes: React.ReactNode) {
+    React.Children.forEach(nodes, (child) => {
+      if (!React.isValidElement(child)) return;
+
+      if (child.type === React.Fragment && child.key == null) {
+        recurse(child.props.children); // 🌟 recurse here
+      } else {
+        result.push(child);
+      }
+    });
+  }
+
+  recurse(children);
+  return result;
+}
+
 export function Section({
   children,
   title,
+  titleView,
   footer,
   ...props
 }: ViewProps & {
   title?: string | React.ReactNode;
+  titleView?: boolean;
   footer?: string | React.ReactNode;
 }) {
   const listStyle = React.use(ListStyleContext) ?? "auto";
 
-  const childrenWithSeparator = React.Children.map(children, (child, index) => {
-    if (!React.isValidElement(child)) {
-      return child;
-    }
-    const isLastChild = index === React.Children.count(children) - 1;
+  const allChildren: React.ReactNode[] = flattenChildren(children);
+
+  const childrenWithSeparator = allChildren.map((child, index) => {
+    if (!React.isValidElement(child)) return child;
+
+    const isLastChild = index === allChildren.length - 1;
 
     const resolvedProps = {
       ...child.props,
     };
     // Extract onPress from child
     const originalOnPress = resolvedProps.onPress;
+    const originalOnLongPress = resolvedProps.onLongPress;
     let wrapsFormItem = false;
     if (child.type === Button) {
       const { title, color } = resolvedProps;
@@ -333,7 +479,11 @@ export function Section({
         { color: color ?? AppleColors.link },
         resolvedProps.style
       );
-      child = <RNText {...resolvedProps}>{title}</RNText>;
+      child = (
+        <RNText key={child.key} {...resolvedProps}>
+          {title}
+        </RNText>
+      );
     }
 
     if (
@@ -342,11 +492,13 @@ export function Section({
       child.type === Text
     ) {
       child = React.cloneElement(child, {
+        key: child.key,
         dynamicTypeRamp: "body",
         numberOfLines: 1,
         adjustsFontSizeToFit: true,
         ...resolvedProps,
         onPress: undefined,
+        onLongPress: undefined,
         style: mergedStyleProp(FormFont.default, resolvedProps.style),
       });
 
@@ -355,7 +507,7 @@ export function Section({
           return null;
         }
 
-        return React.Children.map(resolvedProps.hint, (child) => {
+        return React.Children.map(resolvedProps.hint, (child, index) => {
           // Filter out empty children
           if (!child) {
             return null;
@@ -363,6 +515,7 @@ export function Section({
           if (typeof child === "string") {
             return (
               <RNText
+                key={String(index)}
                 dynamicTypeRamp="body"
                 style={{
                   ...FormFont.secondary,
@@ -398,8 +551,9 @@ export function Section({
         return (
           <IconSymbol
             name={symbolProps.name}
-            size={symbolProps.size ?? 28}
-            style={{ marginRight: 16 }}
+            size={symbolProps.size ?? 20}
+            style={[{ marginRight: 8 }, symbolProps.style]}
+            weight={symbolProps.weight}
             color={
               symbolProps.color ??
               extractStyle(resolvedProps.style, "color") ??
@@ -411,7 +565,7 @@ export function Section({
 
       if (hintView || symbolView) {
         child = (
-          <HStack>
+          <HStack key={child.key}>
             {symbolView}
             {child}
             {hintView && <View style={{ flex: 1 }} />}
@@ -432,6 +586,7 @@ export function Section({
           if (typeof linkChild === "string") {
             return (
               <RNText
+                key={String(index)}
                 dynamicTypeRamp="body"
                 style={mergedStyles(FormFont.default, resolvedProps)}
               >
@@ -480,8 +635,9 @@ export function Section({
         return (
           <IconSymbol
             name={symbolProps.name}
-            size={symbolProps.size ?? 28}
-            style={{ marginRight: 16 }}
+            size={symbolProps.size ?? 20}
+            style={[{ marginRight: 8 }, symbolProps.style]}
+            weight={symbolProps.weight}
             color={
               symbolProps.color ??
               extractStyle(resolvedProps.style, "color") ??
@@ -492,6 +648,7 @@ export function Section({
       })();
 
       child = React.cloneElement(child, {
+        key: child.key,
         style: [
           FormFont.default,
           process.env.EXPO_OS === "web" && {
@@ -507,7 +664,7 @@ export function Section({
         // TODO: This causes issues with ref in React 19.
         asChild: process.env.EXPO_OS !== "web",
         children: (
-          <FormItem>
+          <FormItem key={String(index)}>
             <HStack>
               {symbolView}
               {wrappedTextChildren}
@@ -524,25 +681,30 @@ export function Section({
         ),
       });
     }
+
     // Ensure child is a FormItem otherwise wrap it in a FormItem
-    if (
-      !wrapsFormItem &&
-      !(child.props as any).custom &&
-      child.type !== FormItem
-    ) {
-      child = <FormItem onPress={originalOnPress}>{child}</FormItem>;
+    if (!wrapsFormItem && !child.props.custom && child.type !== FormItem) {
+      child = (
+        <FormItem
+          key={child.key ?? String(index)}
+          onPress={originalOnPress}
+          onLongPress={originalOnLongPress}
+        >
+          {child}
+        </FormItem>
+      );
     }
 
     return (
-      <>
+      <React.Fragment key={child.key ?? String(index)}>
         {child}
         {!isLastChild && <Separator />}
-      </>
+      </React.Fragment>
     );
   });
 
   const contents = (
-    <View
+    <Animated.View
       {...props}
       style={[
         listStyle === "grouped"
@@ -560,8 +722,9 @@ export function Section({
             },
         props.style,
       ]}
-      children={childrenWithSeparator}
-    />
+    >
+      {childrenWithSeparator}
+    </Animated.View>
   );
 
   const padding = listStyle === "grouped" ? 0 : 16;
@@ -584,22 +747,25 @@ export function Section({
         paddingHorizontal: padding,
       }}
     >
-      {title && (
-        <RNText
-          dynamicTypeRamp="footnote"
-          style={{
-            textTransform: "uppercase",
-            color: AppleColors.secondaryLabel,
-            paddingHorizontal: 20,
-            paddingVertical: 8,
-            fontSize: 14,
-            // use Apple condensed font
-            // fontVariant: ["small-caps"],
-          }}
-        >
-          {title}
-        </RNText>
-      )}
+      {title &&
+        (titleView ? (
+          title
+        ) : (
+          <RNText
+            dynamicTypeRamp="footnote"
+            style={{
+              textTransform: "uppercase",
+              color: AppleColors.secondaryLabel,
+              paddingHorizontal: 20,
+              paddingVertical: 8,
+              fontSize: 14,
+              // use Apple condensed font
+              // fontVariant: ["small-caps"],
+            }}
+          >
+            {title}
+          </RNText>
+        ))}
       {contents}
       {footer && (
         <RNText
@@ -607,7 +773,8 @@ export function Section({
           style={{
             color: AppleColors.secondaryLabel,
             paddingHorizontal: 20,
-            paddingVertical: 8,
+            paddingTop: 8,
+
             fontSize: 14,
           }}
         >
