@@ -607,6 +607,7 @@ const MAPPING = {
   "arrow.down.right": "arrow-bottom-right",
   asterisk: "asterisk",
   "apple.logo": "apple",
+  "arrow.triangle.branch": "source-branch",
 } as Partial<
   Record<
     import("expo-symbols").SymbolViewProps["name"],

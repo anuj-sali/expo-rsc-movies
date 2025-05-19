@@ -133,6 +133,29 @@ export default function SettingsScreen() {
       </Form.Section>
 
       <Form.Section>
+        <Form.Link
+          href="https://github.com/EvanBacon/expo-rsc-movies"
+          hintImage="arrow.triangle.branch"
+          target="_blank"
+        >
+          Clone on GitHub
+        </Form.Link>
+
+        <Form.Link
+          href="https://testflight.apple.com/join/2dukdeQW"
+          target="_blank"
+        >
+          Download on TestFlight
+        </Form.Link>
+
+        {process.env.EXPO_OS !== "web" && (
+          <Form.Link href="https://flix.expo.app/" target="_blank">
+            Open in the browser
+          </Form.Link>
+        )}
+      </Form.Section>
+
+      <Form.Section>
         <Form.Text systemImage={{ name: "iphone" }}>
           Expo{" "}
           {Constants.expoConfig?.sdkVersion?.split(".").shift() ?? "(Latest)"}
