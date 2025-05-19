@@ -9,6 +9,7 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "web": {
+      "output": "server",
       "favicon": "./assets/images/icon.png"
     },
     "ios": {
