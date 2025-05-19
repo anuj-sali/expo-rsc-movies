@@ -13,6 +13,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <ReanimatedScreenProvider>
+        <meta name="apple-itunes-app" content="app-id=6745745461" />
         <Tabs>
           <Tabs.Screen
             name="(index)"
