@@ -9,6 +9,9 @@ import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import { TRENDING_MEDIA_FIXTURE } from "./fixtures/search-fixtures";
 
+const { ReadableStream } = require('node:stream/web');
+globalThis.ReadableStream = ReadableStream;
+
 const POSTER_WIDTH = 140;
 const POSTER_HEIGHT = 210;
 const USE_FIXTURES = false;
