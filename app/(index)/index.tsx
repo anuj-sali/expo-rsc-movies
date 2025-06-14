@@ -1,5 +1,5 @@
 /// <reference types="react/canary" />
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 
 import { SearchPlaceholder } from "@/components/SearchPlaceholder";
 import { BodyScrollView } from "@/components/ui/BodyScrollView";
@@ -7,6 +7,7 @@ import { renderSearchContents } from "@/functions/render-search";
 import { useHeaderSearch } from "@/hooks/useHeaderSearch";
 import * as AC from "@bacons/apple-colors";
 import React from "react";
+// import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const POSTER_WIDTH = 140;
 const POSTER_HEIGHT = 210;
@@ -20,7 +21,13 @@ export default function HomeScreen() {
     return <SearchPlaceholder />;
   }
 
-  return <SearchPage text={text} />;
+  return (
+    <React.Suspense fallback={<SearchPlaceholder />}>
+     
+        <SearchPage text={text} />
+  
+    </React.Suspense>
+  );
 }
 
 function SearchPage({ text }: { text: string }) {

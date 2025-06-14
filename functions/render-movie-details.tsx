@@ -23,34 +23,22 @@ const USE_FIXTURES = false;
 
 type MediaType = "movie" | "tv";
 
-export async function renderMedia(id: string, type: MediaType = "movie") {
-  return (
-    <>
-      <Stack.Screen
-        options={{
-          title: "",
-        }}
-      />
-
-      <MediaDetails id={id} type={type} />
-
-      <React.Suspense fallback={<ListSkeleton />}>
+export async function renderMedia(id: string, type: MediaType) {
+  try {
+    return (
+      <View style={{ gap: 24 }}>
+        <MediaDetails id={id} type={type} />
         <MediaVideos id={id} type={type} />
-      </React.Suspense>
-
-      <React.Suspense fallback={<ListSkeleton />}>
+        {/* <MediaCredits id={id} type={type} /> */}
         <MediaCast id={id} type={type} />
-      </React.Suspense>
-
-      <React.Suspense fallback={<ListSkeleton />}>
         <MediaCompanies id={id} type={type} />
-      </React.Suspense>
-
-      <React.Suspense fallback={<ListSkeleton />}>
         <SimilarMedia id={id} type={type} />
-      </React.Suspense>
-    </>
-  );
+      </View>
+    );
+  } catch (error) {
+    console.error(`Error rendering ${type} with id ${id}:`, error);
+    return <Text>Failed to load content. Please try again later.</Text>;
+  }
 }
 
 function HorizontalList({
@@ -296,11 +284,8 @@ async function MediaDetails({ id, type }: { id: string; type: MediaType }) {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
         },
+        cache: 'no-store'
       }).then((res) => res.json());
-
-  // if (!response.ok) {
-  //   throw new Error(`Failed to fetch ${type}`);
-  // }
 
   return (
     <>
@@ -435,6 +420,7 @@ async function MediaVideos({ id, type }: { id: string; type: MediaType }) {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
         },
+        cache: 'no-store'
       }).then((res) => res.json());
 
   if (!videos.results.length) return null;
@@ -455,6 +441,7 @@ async function MediaCast({ id, type }: { id: string; type: MediaType }) {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
         },
+        cache: 'no-store'
       }).then((res) => res.json());
   // console.log(JSON.stringify(credits));
 
@@ -474,6 +461,7 @@ async function MediaCompanies({ id, type }: { id: string; type: MediaType }) {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
         },
+        cache: 'no-store'
       }).then((res) => res.json());
 
   return (
@@ -492,6 +480,7 @@ async function SimilarMedia({ id, type }: { id: string; type: MediaType }) {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
         },
+        cache: 'no-store'
       }).then((res) => res.json());
 
   return (

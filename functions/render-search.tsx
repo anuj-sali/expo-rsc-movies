@@ -14,15 +14,22 @@ const POSTER_HEIGHT = 210;
 const USE_FIXTURES = false;
 
 export async function renderSearchContents(query: string) {
-  return (
-    <View style={{ gap: 24 }}>
-      <MoviesSection query={query} />
-
-      <ShowsSection query={query} />
-
-      <PeopleSection query={query} />
-    </View>
-  );
+  try {
+    return (
+      <View style={{ gap: 24 }}>
+        <MoviesSection query={query} />
+        <ShowsSection query={query} />
+        <PeopleSection query={query} />
+      </View>
+    );
+  } catch (error) {
+    console.error("Error rendering search contents:", error);
+    return (
+      <View style={{ padding: 16 }}>
+        <Text>Failed to load search results. Please try again later.</Text>
+      </View>
+    );
+  }
 }
 
 const MediaCard = ({
@@ -272,6 +279,7 @@ async function getMovies(query = "") {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
         },
+        cache: 'no-store'
       }
     );
 
@@ -298,6 +306,7 @@ async function getShows(query = "") {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
         },
+        cache: 'no-store'
       }
     );
 
@@ -306,6 +315,7 @@ async function getShows(query = "") {
     }
 
     const data = await response.json();
+
     return data.results;
   } catch (error) {
     console.error("Error fetching shows:", error);
@@ -323,6 +333,7 @@ async function getPeople(query = "") {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
         },
+        cache: 'no-store'
       }
     );
 
@@ -331,6 +342,7 @@ async function getPeople(query = "") {
     }
 
     const data = await response.json();
+
     return data.results;
   } catch (error) {
     console.error("Error fetching people:", error);
@@ -356,6 +368,7 @@ export async function renderTrendingMedia({
             accept: "application/json",
             Authorization: `Bearer ${process.env.TMDB_READ_ACCESS_TOKEN}`,
           },
+          cache: 'no-store'
         }
       ).then((res) => res.json());
 
