@@ -3,41 +3,41 @@
 ```mermaid
 flowchart TD
     %% Main Layout and Navigation
-    A["App Entry"] --> B["Root Layout"]
-    B --> C["Tab Navigation"]
-    C --> D["Search Tab"]
-    C --> E["Settings Tab"]
+    A["App Entry (app/_layout.tsx)"] --> B["Root Layout (app/_layout.tsx)"]
+    B --> C["Tab Navigation (components/ui/Tabs.tsx)"]
+    C --> D["Search Tab (app/(index)/_layout.tsx)"]
+    C --> E["Settings Tab (app/(settings)/_layout.tsx)"]
     
     %% Search Flow
-    D --> F["Home Screen"]
-    F --> G["Search UI"]
-    G --> H["Search Logic"]
-    H --> I["Movie Details"]
-    H --> J["Show Details"]
-    H --> K["Person Details"]
+    D --> F["Home Screen (app/(index)/index.tsx)"]
+    F --> G["Search UI (app/(index)/index.tsx)"]
+    G --> H["Search Logic (hooks/useHeaderSearch.ts)"]
+    H --> I["Movie Details (app/(index)/movie/[id].tsx)"]
+    H --> J["Show Details (app/(index)/show/[id].tsx)"]
+    H --> K["Person Details (app/(index)/person/[id].tsx)"]
     
     %% Data Fetching
-    H --> L["TMDB API Client"]
+    H --> L["TMDB API Client (functions/render-search.tsx)"]
     I & J & K --> L
     
     %% UI Components
     subgraph "UI Components"
-        M["Media Cards"]
-        N["Headers"]
-        O["Forms"]
-        P["Icons"]
+        M["Media Cards (components/MediaCard.tsx)"]
+        N["Headers (components/ui/Header.tsx)"]
+        O["Forms (components/ui/Form.tsx)"]
+        P["Icons (components/ui/IconSymbol.tsx)"]
     end
     
     %% State Management
     subgraph "State & Hooks"
-        Q["useHeaderSearch"]
-        R["useColorScheme"]
+        Q["useHeaderSearch (hooks/useHeaderSearch.ts)"]
+        R["useColorScheme (hooks/useColorScheme.ts)"]
     end
     
     %% Theming
     subgraph "Theming"
-        S["ThemeProvider"]
-        T["Colors"]
+        S["ThemeProvider (components/ui/ThemeProvider.tsx)"]
+        T["Colors (apple-colors)"]
     end
     
     %% Data Flow
