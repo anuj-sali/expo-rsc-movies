@@ -1,0 +1,25 @@
+Subtitles:
+https://sub.wyzie.ru/search?id=tt0330373&encoding=utf-8&source=all
+
+Stream Providers:
+https://backend.xprime.tv/rage?imdb=tt0330373
+
+Decoding backend.xprime.tv:
+1. https://backend.xprime.tv/rage?imdb=tt0245429
+2. https://backend.xprime.tv/primebox?name=Spirited%20Away&year=2001&fallback_year=2001
+3. https://backend.xprime.tv/kraken?id=129&name=Spirited%20Away
+4. https://backend.xprime.tv/primenet?id=120
+5. https://backend.xprime.tv/phoenix?id=129&imdb=tt0245429
+
+Decoding pstream.org:
+1. curl -H "Origin: https://pstream.org" https://fed-api-europe.pstream.org/cache/tt0330373
+
+
+Decoding cinemaos.live:
+1. https://cinemaos.live/api/neo/resources?requestID=tvVideoProvider&id=221300&season=1&episode=1&service=flowcast&secret=LTI1NDBmNDE0
+
+
+
+
+
+
