@@ -3,6 +3,7 @@
 import { Image } from "@/components/img";
 import { FadeIn } from "@/components/ui/FadeIn";
 import TouchableBounce from "@/components/ui/TouchableBounce";
+import WatchButton from '@/components/WatchButton';
 import { label } from "@bacons/apple-colors";
 import { Link, Stack } from "expo-router";
 import React from "react";
@@ -18,6 +19,7 @@ import {
   SIMILAR_MEDIA_FIXTURE,
   VIDEOS_FIXTURE,
 } from "./fixtures/movie-detail-fixtures";
+
 
 const USE_FIXTURES = false;
 
@@ -40,6 +42,13 @@ export async function renderMedia(id: string, type: MediaType) {
     return <Text>Failed to load content. Please try again later.</Text>;
   }
 }
+
+
+
+
+
+
+
 
 function HorizontalList({
   title,
@@ -321,6 +330,7 @@ async function MediaDetails({ id, type }: { id: string; type: MediaType }) {
             backgroundColor: AC.systemGroupedBackground,
           }}
         >
+          
           <Text
             style={{
               fontSize: 20,
@@ -338,6 +348,17 @@ async function MediaDetails({ id, type }: { id: string; type: MediaType }) {
             }}
           >
             {[
+              {
+                label: "Watch Now",
+                value: (
+                  <WatchButton
+                    style={{
+                      marginTop: 8,
+                      marginBottom: 8,
+                    }}
+                  />
+                ),
+              },
               {
                 label: type === "movie" ? "Release Date" : "First Air Date",
                 value: new Date(

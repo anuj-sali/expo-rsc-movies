@@ -69,6 +69,7 @@ export function SearchPlaceholder() {
 
   return (
     <BodyScrollView contentContainerStyle={{ paddingVertical: 16, gap: 24 }}>
+      {/* Trending Movies */}
       <React.Suspense fallback={<SkeletonRow />}>
         {renderTrendingMedia({
           type: "movie",
@@ -76,6 +77,8 @@ export function SearchPlaceholder() {
           size: numItems,
         })}
       </React.Suspense>
+
+      {/* Trending TV Shows */}
       <React.Suspense fallback={<SkeletonRow />}>
         {renderTrendingMedia({
           type: "tv",

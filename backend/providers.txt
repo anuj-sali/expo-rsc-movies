@@ -12,7 +12,7 @@ Decoding backend.xprime.tv:
 5. https://backend.xprime.tv/phoenix?id=129&imdb=tt0245429
 
 Decoding pstream.org:
-1. curl -H "Origin: https://pstream.org" https://fed-api-europe.pstream.org/cache/tt0330373
+1. curl -H "Origin: https://pstream.org" https://fed-api-europe.pstream.org/cache/tt1201607
 
 
 Decoding cinemaos.live:

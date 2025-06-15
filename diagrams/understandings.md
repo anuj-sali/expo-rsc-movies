@@ -1,0 +1,3 @@
+- SearchPlaceholder(see in index.tsx) is default screen having Trending movies and TV Shows having 6 cards each on mobile and 9 cards each on web
+- SearchPage(see in index.tsx) is the screen that is shown when user searches for a movie or TV Show
+- renderSearchContents(see in render-search.tsx) is the function that is called when user searches for a movie or TV Show

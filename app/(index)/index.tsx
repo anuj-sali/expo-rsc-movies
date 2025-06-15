@@ -21,6 +21,7 @@ export default function HomeScreen() {
     return <SearchPlaceholder />;
   }
 
+/* SearchPlaceholder is default screen having Trending movies and TV Shows having 6 cards each on mobile and 9 cards each on web */
   return (
     <React.Suspense fallback={<SearchPlaceholder />}>
      
